@@ -1,9 +1,9 @@
 import random
 from colorama import Fore, Style
 
-board_width = 30
-board_height = 16
-num_bombs = 99
+board_width = 10
+board_height = 10
+num_bombs = 20
 b = 9
 
 key = {"value": 0, "visibility": 0}
@@ -66,10 +66,7 @@ def board_numbers(board):
             # iterate through the adjacents of each position
             for a in adjacents:
                 adj_x, adj_y = x + a[0], y + a[1]
-                
-                # board_width = number of columns in each row
-                # board_height = number of rows 
-                # check the current adjacent is on the board
+                # ensure that the current adjacent is on the board
                 if 0 <= adj_x < board_width and 0 <= adj_y < board_height:
                     # if the adjacent contains a bomb then increase the counter
                     if board[adj_y][adj_x][0] == b:
@@ -79,4 +76,4 @@ def board_numbers(board):
             board[y][x][0] = adj_bombs
 
 board_numbers(board)
-print_board(board, color=False)
+print_board(board, color=True)

@@ -49,7 +49,7 @@ pygame.display.set_caption("Minesweeper")
 
 # load the image (tackle box cat)
 image = pygame.image.load('image.png')  # Load the image
-image_width, image_height = 300, 300  # Desired width and height for the image
+image_width, image_height = 1, 1  # Desired width and height for the image
 image = pygame.transform.scale(image, (image_width, image_height))  # Optionally scale the image
 
 # initial position and velocity for the bouncing image

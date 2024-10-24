@@ -1,3 +1,6 @@
+# Ethan Pierce - 10.2024
+# to do: find impossible bomb generation before applying to matrix? math time!
+
 import pygame
 import random
 from colorama import Fore, Style, init
@@ -7,8 +10,49 @@ pygame.init()
 init(autoreset=True)
 
 class Board:
-    def __init__(self, width, height ) -> None:
+    def __init__(self, width, height, nbombs, attribute_struct={"value": 0, "visibility": 0, "flagged": False}, flag_val="F", bomb_val=9, zero_val='-'):
+        self.width = width
+        self.height = height
+        self.nbombs = nbombs
+        self.flag_val = flag_val
+        self.bomb_val = bomb_val
+        self.zero_val = zero_val
+        self.attribute_struct = attribute_struct
+        self.board = []
+
+    SURROUNDING_CELLS = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+    def generate_board(self):
+        self.board = [[[attribute for attribute in self.attribute_struct.values()] for _ in range(self.width)] for _ in range(self.height)]
+    
+    def generate_bomb_positions(self):
+        bomb_positions = random.sample(range(self.height * self.width), self.nbombs)
+        for pos in bomb_positions:
+            self.board[pos // self.width][pos % self.width][0] = self.bomb_val
+        # applying to matrix then checking for impossible bomb generation is really inefficient
+    
+    def board_numbers(self):
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.board[y][x][0] == self.bomb_val:
+                    continue
+            
+                adj_bombs = 0
+                for a in self.SURROUNDING_CELLS:
+                    adj_x, adj_y = x + a[0], y + a[1]
+                    if 0 <= adj_x < board_width and 0 <= adj_y < board_height:
+                        if board[adj_y][adj_x][0] == b:
+                            adj_bombs += 1
+                board[y][x][0] = adj_bombs
+
+
+
+    def generate_seed(self, board):
         pass
+
+
+    
+
 
 # define constants
 board_width = 30

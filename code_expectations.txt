@@ -1,0 +1,59 @@
+# List of expected functions and how they work for the minesweeper boad
+
+# Initialization:
+board = Board(width, height, num_bombs) 
+    -> Generates a board in this format:
+
+[
+[[0, False, False], [0, False, False], [0, False, False], [0, False, False], [0, False, False]],
+[[0, False, False], [0, False, False], [0, False, False], [0, False, False], [0, False, False]],
+[[0, False, False], [0, False, False], [0, False, False], [0, False, False], [0, False, False]],
+[[0, False, False], [0, False, False], [0, False, False], [0, False, False], [0, False, False]],
+[[0, False, False], [0, False, False], [0, False, False], [0, False, False], [0, False, False]],
+[[0, False, False], [0, False, False], [0, False, False], [0, False, False], [0, False, False]],    ( each `[0, False, False]` is 1 cell )
+[[0, False, False], [0, False, False], [0, False, False], [0, False, False], [0, False, False]],
+[[0, False, False], [0, False, False], [0, False, False], [0, False, False], [0, False, False]],
+[[0, False, False], [0, False, False], [0, False, False], [0, False, False], [0, False, False]],
+[[0, False, False], [0, False, False], [0, False, False], [0, False, False], [0, False, False]],
+[[0, False, False], [0, False, False], [0, False, False], [0, False, False], [0, False, False]]
+]
+
+# Attributes:
+## board.width 
+    -> width of the board
+## board.height 
+    -> height of the board
+## board.num_bombs 
+    -> number of bombs on the board
+## board.flag_val 
+    -> defines the display value of flagged cells when hidden 
+       (display value used for flagged cells when printing the board with print_board(all_visible=False)) (see # Methods)
+## board.bomb_val 
+    -> defines the display value of bomb cells 
+## board.zero_val
+    -> defines the display value of empty cells
+## board.gameboard
+    -> the actual minesweeper game board
+## board.seed
+    -> the seed of the gameboard (not yet implemented)
+
+# Methods
+## board.print_board(all_visible=True, all_vals=False, raw=False)
+    Purpose: To print the gameboard in the terminal for testing purposes
+    Returns: No Return
+    ### Params:
+        all_visible: bool -> Determines if all the cell values on the gameboard are visible or not when the board is printed
+        all_vals: bool -> Determines if the full cell values ([value, visible, flagged]) are included when the board is printed
+        raw: bool -> Determines if the board is printed as a raw 3D list (True) or as an unformatted matrix of numbers (False)
+    ### Test Cases:
+        print_board() when board is empty -> Nothing is printed
+
+## board._validate_pos(pos)
+    Purpose: To validate a position value's format and existence on a board
+    Returns: Boolean
+    ### Params:
+        pos: tuple -> A tuple in 2D cardinal format (x, y)
+    ### Test Cases:
+        
+
+
