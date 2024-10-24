@@ -6,158 +6,34 @@ class Minesweeper:
         self.gameboard = None
         self.seed = None
         self.bomb_val = 9
-        # each cell = [0, False, False] -> Hidden unflagged cell with value 0
-        self.cell_struct = {"value": 0, "visibility": False, "flagged": False} 
+        self.cell_struct = {"value": 0, "visibility": False, "flagged": False} # data structure of each cell
     
     # indices for each cell for readability
     VALUE, VISIBILITY, FLAGGED = 0, 1, 2
 
-    def print_board(self, all_visible=True, all_vals=False, raw=False) -> None:
-        # args aren't implemented yet because i don't feel like it
-        if raw:
-            for row in self.gameboard.board:
-                print(row)
-        else:
-            for y in range(self.gameboard.height):
-                for x in range(self.gameboard.width):
-                    print(self.gameboard[(x, y)][self.VALUE], end=' ')
-                print()
-    
-    # pls use for all methods with pos parameter <3
-    # raises an exception if the position is out of the board dimensions or is invalid
-    # if pos[0] < 0 or pos[0] > self.gameboard.width:  out of bounds on x axis
-    # if pos[1] < 0 or pos[1] > self.gameboard.height: out of bounds on y axis ... etc.
-    def _valid_pos(self, pos: tuple, feedback=True):
-        if len(pos) != 2 or not isinstance(pos, tuple):
-            if feedback: print(f"pos {pos} must be a tuple of length 2")
-            return False
-        if not ((isinstance(pos[0], int) and isinstance(pos[1], int))):
-            if feedback: print(f"Expected values x, y in pos to be int. Got: {type(pos[0]), type(pos[1])}")
-            return False
-        return True
 
-    # similar to _valid_pos, but a value is returned with no exceptions
-    def _in_bounds(self, pos: tuple):
-        try:
-            self.gameboard[pos]
-        except IndexError:
-            return False
-        return True
-
-    # must be updated if cell values change
-    # modifies self.gameboard in place
-    # sets the value of cell {attribute} to {value} for all cells on self.gameboard
-    # attribute must be VALUE, VISIBILITY, or FALGGED (0, 1, or 2)
-    # i would never in a million years let this be global even tho its idiot proofed (im an idiot)
-    def _set_all_cells(self, attribute, value):
-        # ------ idiot-proofing ------
-        # validate attribute
-        if attribute not in (self.VALUE, self.VISIBILITY, self.FLAGGED):
-            print(f"set_all_cells({attribute}, {value}) : Invalid attribute `{attribute}`")
-            return
-        # validate VALUE
-        if attribute == self.VALUE and len(value) != 1:
-            print(f"set_all_cells({attribute}, {value}) : Value {value} must be of length 1")
-            return
-        # validate VISIBILITY
-        if attribute == self.VISIBILITY and not isinstance(value, bool):
-            print(f"set_all_cells({attribute}, {value}) : Invalid visibility {value}")
-            return
-        # validate FLAGGED
-        if attribute == self.FLAGGED and not isinstance(value, bool):
-            print(f"set_all_cells({attribute}, {value}) : Invalid flag {value}")
-            return
-        
-        for row in self.gameboard.board:
-            for col in row:
-                col[attribute] = value
-        
-
-
-    # modifies self.gameboard in place
-    # sets all cells to visible
-    def reveal_all(self):
-        # --- if set_all_cells method doesn't work for some reason ---
-        #   for row in self.gameboard:
-        #       for col in row:
-        #           col[self.VISIBILITY] = True
-        # ---                                                      ---
-
-        self._set_all_cells(attribute=self.VISIBILITY, value=True)
-
-
-
-
-    # modifies self.gameboard in place
-    # sets all cells to hidden
-    def hide_all(self):
-        # --- if set_all_cells method doesn't work for some reason ---
-        #   for row in self.gameboard:
-        #       for col in row:
-        #           col[self.VISIBILITY] = False
-        # ---                                                      ---
-
-        self._set_all_cells(attribute=self.VISIBILITY, value=False)
-    
-    # modifies self.gameboard[cell] in place
-    # set cell at pos[1][0] to visible
-    def reveal(self, pos: tuple) -> None:
-        if self.gameboard[pos][self.VISIBILITY]: 
-            print(f"reveal({pos}) : Cell already visible")
-        self.gameboard[pos][self.VISIBILITY] = True
-
-    # modifies self.gameboard[cell] in place
-    def hide(self, pos: tuple) -> None:
-        if not self._in_bounds(pos):
-            print(f"hide({pos}) : Position is out of bounds")
-            return
-        if not self.gameboard[pos][self.VISIBILITY]:
-            print(f"hide({pos}) : Cell already hidden")
-            return
-        self.gameboard[pos][self.VISIBILITY] = False
-
-    # modifies self.gameboard[cell] in place
-    # sets pos[1][0] to flagged, or unflagged if already flagged
-    def flag(self, pos: tuple) -> None:
-        self.gameboard[pos][self.FLAGGED] = True if not self.gameboard[pos][self.FLAGGED] else False
-
+    # ----------------------------- BOARD GENERATION -----------------------------
     # assign values to self.gameboard (no return)
     # if not seed, generate with normal generation methods
     # already happens in constructor, but used if you need to regenerate the board
-    def generate_board(self, width=0, height=0, num_bombs=0, seed=None): 
+    def generate_board(self, width=0, height=0, num_bombs=0, seed=None) -> None: 
         if seed:
-            self._decompile_seed(seed)
+            raise NotImplementedError
+            self._decompile_seed(seed) 
             return
         self.gameboard = Gameboard(width, height, num_bombs, list(self.cell_struct.values()))
-        
-        # generate board based on seed
+
         self.place_bombs()
-        self.assign_vals()
+        self.assign_vals(validate=True)
 
-    # generates a board based on a required seed (just do in generate_board?)
-    def _decompile_seed(self, seed: int):
-        if not seed:
-            print(f"The seed value has not been generated yet! seed: {seed}")
-            return None
-
-    # generates and returns a unique seed based on:
-    # - values of the bomb positions
-    # - width and height of the board (order matters)
-    # - number of bombs
-    # allows us to compact a board into a seed and regenerate based on that
-    # this is gonna require a lot of thought and math
-    def _compile_seed(self) -> int:
-        pass
-    
-    # private
-    # generates bomb positions for self.gameboard
-    # {exclude} excludes a bomb position from being generated
+    # TODO: This method sucks really bad rn
+    # {exclude} should exclude a bomb position from being generated (not implemented)
     # called by generate_board internally
-    # returns list of 'pos' style tuple positions [(x1, y1), (x2, y2), (x3, y3)...]
-    # this is the hard part
-    # retro style generation
-    # this should be as efficient as possible (ironic)
+    # returns list of random bomb positions [(x1, y1), (x2, y2), (x3, y3)...]
+    # this should be as efficient as possible
     def _generate_bomb_positions(self, exclude=None) -> list:
+        if exclude != None:
+            raise NotImplementedError
         positions = []
         # if the range is like 20 and exclude is 5, sample should be of range()
         random_position_sample = random.sample(range(self.gameboard.height * self.gameboard.width), self.gameboard.num_bombs) # list
@@ -173,42 +49,95 @@ class Minesweeper:
             y_pos = value // self.gameboard.width
             positions.append((x_pos, y_pos))
         return positions
-
-    # should work globally
-    # places bombs onto self.gameboard
-    # relies on generate_bomb_positions() to generate values    
+    
+    # assigns ALL bombs on the board via positions given by generate_bomb_positions()
     def place_bombs(self, exclude=None) -> None:
         positions = self._generate_bomb_positions(exclude)
         for pos in positions:
             self.gameboard[pos][self.VALUE] = self.bomb_val
+    
+    # generates and assigns the values for all cells based on bomb adjacency 
+    # called by generate_board() internally
+    def assign_vals(self, validate=False) -> None:
+        for y in range(self.gameboard.height):
+            for x in range(self.gameboard.width):
+                pos = (x, y)
+                if self._get_cell_value(pos) == self.bomb_val:    # skip bomb cells
+                    continue
+                num_adj_bombs = len(self._adjacent_relatives(pos, self.bomb_val))
+                self.gameboard[pos][self.VALUE] = num_adj_bombs
+                if validate:
+                    num_adj_cells = len(self._adjacent_relatives(pos))
+                    if num_adj_cells == num_adj_bombs:
+                        print(f"[WARN] Detected surrounded safe cell at {pos}")
+    
+    # TODO
+    # generates and returns a unique seed based on:
+    # - values of the bomb positions
+    # - width and height of the board (order matters)
+    # - number of bombs
+    # allows us to compact a board into a seed and regenerate based on that
+    # this will require a lot of thought and math
+    def _compile_seed(self) -> int:
+        raise NotImplementedError
+        pass
+    
+    # generates a board based on a required seed (just do in generate_board?)
+    def _decompile_seed(self, seed: int):
+        raise NotImplementedError
+        if not seed:
+            print(f"The seed value has not been generated yet! seed: {seed}")
+            return None
+        
+
+    # ----------------------------- BOARD ACTIONS -----------------------------
+
+    # processes like the user revealed a cell at pos
+    # different from board.reveal() in that the game ends if (x, y)
+    # performs cascade reveal if pos value is 0
+    def click(self, pos: tuple) -> None:
         pass
 
-    # private
-    # tool for cascade() and assign_vals() to check adjacent cells
-    # target is the value we want to return the positions of
-    # returns list of tuples [(x1, y1), (x2, y2), (x3, y3)...]
-    def _adjacent_relatives(self, pos: tuple, target) -> list:
-        if not self._valid_pos(pos, feedback=False):
+    # sets the cell at {pos} to visible
+    def reveal(self, pos: tuple) -> None:
+        if self.gameboard[pos][self.VISIBILITY]: 
+            print(f"reveal({pos}) : Cell already visible")
+        self.gameboard[pos][self.VISIBILITY] = True
+
+    # sets the cell at {pos} to hidden
+    def hide(self, pos: tuple) -> None:
+        if not self._in_bounds(pos):
+            print(f"hide({pos}) : Position is out of bounds")
+            return
+        if not self.gameboard[pos][self.VISIBILITY]:
+            print(f"hide({pos}) : Cell already hidden")
+            return
+        self.gameboard[pos][self.VISIBILITY] = False
+
+    # sets the cell at {pos} to flagged, or not flagged if already flagged
+    def flag(self, pos: tuple) -> None:
+        self.gameboard[pos][self.FLAGGED] = True if not self.gameboard[pos][self.FLAGGED] else False
+
+
+    # ----------------------------- CLASS TOOLS -----------------------------
+
+    # returns a list of the positions of adjacent cells to {pos}
+    # if a target is assigned, returns only positions of adjacent cells that match target
+    # if no target is assigned, return all positions of all adjacent cells
+    def _adjacent_relatives(self, pos: tuple, target=None) -> list:
+        if not self._is_valid_pos(pos, feedback=False):
             print(f"_adjacent_relatives({pos}, {target}) : Invalid Position Argument {pos}")
             return
-        # ADJACENTS = [(adj_x, adj_y) for adj_x in range(-1, 2) for adj_y in range(-1, 2) if not (adj_x == 0 and adj_y == 0)]
         ADJACENTS = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
         adjacent_targets = []
         for a in ADJACENTS:
             adj_pos = (pos[0] + a[0], pos[1] + a[1])
-            if self._in_bounds(adj_pos) and self.gameboard[adj_pos][self.VALUE] == target:
+            target_matched = self._in_bounds(adj_pos) and ((self.gameboard[adj_pos][self.VALUE] == target) or target == None)
+            if target_matched:
                 adjacent_targets.append(adj_pos)
         return adjacent_targets
-            
-    # modifies self.gameboard in place
-    # should work globally
-    # generates and assigns the values for all cells based on bomb adjacency 
-    # uses _adjacent_relatives for this
-    # called by generate_board internally
-    def assign_vals(self) -> None:
 
-        pass
-
+    # TODO
     # modifies self.gameboard in place
     # if self.gameboard.cell(x, y)
     # cascading cell revealing from cell (x, y)
@@ -217,16 +146,91 @@ class Minesweeper:
     def _cascade(self, pos: tuple) -> None:
         pass
 
-    # modifies self.gameboard in place
-    # if flagged(pos)
-    # processes like the user revealed a cell at pos = (x, y)
-    # different from board.reveal() in that the game ends if (x, y)
-    # is a bomb, and performs cascade reveal if its a 0
-    def click(self, pos: tuple) -> None:
-        pass
+    # updates the value of a cell at {pos} based on number of bomb cells adjacent
+    def _update_cell_value(self, pos):
+        if self.cell_value(pos) == self.bomb_val:
+            return
+        self.gameboard[pos][self.VALUE] = len(self._adjacent_relatives(pos, self.bomb_val)) 
 
-    def _flagged(self, pos: tuple) -> bool:
+    # sets the value of a cell at {pos} to {value}
+    def _set_cell_value(self, pos, value):
+        if not self._in_bounds(pos): 
+            print(f"_set_cell_value({pos}, {value}) : Position not in bounds")
+            return
+        self.gameboard[pos][self.VALUE] = value
+
+    # returns the value of a given position
+    def _get_cell_value(self, pos):
+        if self._in_bounds(pos):
+            return self.gameboard[pos][self.VALUE]
+        else:
+            print(f"cell_value({pos}) : Position out of bounds")
+            return None
+    
+    # TODO: Works, but structure sucks since _validate_pos() exists in Gameboard
+    def _is_valid_pos(self, pos: tuple, feedback=True):
+        if len(pos) != 2 or not isinstance(pos, tuple):
+            if feedback: print(f"pos {pos} must be a tuple of length 2")
+            return False
+        if not ((isinstance(pos[0], int) and isinstance(pos[1], int))):
+            if feedback: print(f"Expected values x, y in pos to be int. Got: {type(pos[0]), type(pos[1])}")
+            return False
+        return True
+
+    # True if {pos} exists in self.gameboard, else False
+    def _in_bounds(self, pos: tuple):
+        try:
+            self.gameboard[pos]
+        except IndexError:
+            return False
+        return True
+    
+    # True if cell at {pos} is flagged, else False
+    def _is_flagged(self, pos: tuple) -> bool:
         return self.gameboard[pos][self.FLAGGED]
+    
+    # True if cell at {pos} is visible, else False
+    def _is_visible(self, pos: tuple) -> bool:
+        return self.gameboard[pos][self.VISIBILITY]
+
+    # ----------------------------- DEV TOOLS -----------------------------
+
+    # TODO: args aren't implemented yet because i don't feel like it
+    def print_board(self, all_visible=True, all_vals=False, raw=False) -> None:
+        if raw:
+            for row in self.gameboard.board:
+                print(row)
+        else:
+            for y in range(self.gameboard.height):
+                for x in range(self.gameboard.width):
+                    print(self.gameboard[(x, y)][self.VALUE], end=' ')
+                print()
+
+    # assigns ONE cell on the board to self.bomb_val
+    def place_bomb(self, pos):
+        if not self._in_bounds(pos): 
+            print(f"place_bomb({pos}) : Position not in bounds")
+            return
+        self._set_cell_value(pos, self.bomb_val)
+        self._update_cell_value(pos)
+
+    # sets the {attribute} of all cells to {value}
+    # very open, can set any attribute to whatever you want (can break stuff)
+    def set_all_cells(self, attribute, value):
+        try:
+            for row in self.gameboard.board:
+                for col in row:
+                    col[attribute] = value
+        except IndexError:
+            print(f"_set_all_cells({attribute}, {value}) : Attribute index {attribute} not found in cells")
+        
+    # sets all cells to visible
+    def reveal_all(self) -> None:
+        self._set_all_cells(attribute=self.VISIBILITY, value=True)
+
+    # sets all cells to hidden
+    def hide_all(self) -> None:
+        self._set_all_cells(attribute=self.VISIBILITY, value=False)
 
     # ----- for later -----
     # get_state(self) for a serialized version of the board with only the data 
@@ -234,11 +238,29 @@ class Minesweeper:
     # 
     # to_dict() or to_json() for easy integration with front-end API 
 
+# Tools:
+# generate_board(width, height, num_bombs)
+# click(pos) (not implemeneted)
+# reveal(pos)
+# hide(pos)
+# flag(pos)
+# _is_visible(pos)
+# _is_flagged(pos)
+
+# place_bomb(pos)
+# set_all_cells(attribute, value)
+# reveal_all()
+# hide_all()
+
+# _adjacent_relatives(pos, target)
+# _update_cell_value(pos)
+# _set_cell_value(pos, value)
+# _get_cell_value(pos)
+# _is_valid_pos(pos)
+# _in_bounds(pos)
+
 minesweeper = Minesweeper()
 minesweeper.generate_board(width=5, height=5, num_bombs=5)
-
-cell = minesweeper.gameboard[(0, 0)]
-cell[minesweeper.VALUE] = '*'
-minesweeper.gameboard[(0, 0)] = cell
+minesweeper._set_cell_value((4, 4), '*')
 minesweeper.print_board()
-print(minesweeper._adjacent_relatives(pos=(0, 0), target=9))
+print(minesweeper._adjacent_relatives(pos=(4, 4), target=9))
