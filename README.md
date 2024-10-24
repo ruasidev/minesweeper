@@ -1,1 +1,20 @@
-# minesweeper
+# Tools:
+generate_board(width, height, num_bombs)
+click(pos) (not implemeneted)
+reveal(pos)
+hide(pos)
+flag(pos)
+_is_visible(pos)
+_is_flagged(pos)
+
+place_bomb(pos)
+set_all_cells(attribute, value)
+reveal_all()
+hide_all()
+
+_adjacent_relatives(pos, target)
+_update_cell_value(pos)
+_set_cell_value(pos, value)
+_get_cell_value(pos)
+_is_valid_pos(pos)
+_in_bounds(pos)
