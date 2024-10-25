@@ -211,7 +211,12 @@ class Minesweeper:
 
     # TODO: args aren't implemented yet because i don't feel like it
     def print_board(self, all_visible=False) -> None:
+        print(f"    ", end='')
+        for i in range(self.gameboard.width):
+            print(f"{i}", end=" ")
+        print()
         for y in range(self.gameboard.height):
+            print(y, end=' | ')
             for x in range(self.gameboard.width):
                 if all_visible:
                     print(self.gameboard[(x, y)][self.VALUE], end=' ')
