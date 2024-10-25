@@ -13,7 +13,7 @@
 `reveal_all()`</br>
 `hide_all()`</br>
 </br>
-`_adjacent_relatives(pos, target)`</br>
+`_get_adjacent_relatives(pos, target)`</br>
 `_update_cell_value(pos)`</br>
 `_set_cell_value(pos, value)`</br>
 `_get_cell_value(pos)`</br>
