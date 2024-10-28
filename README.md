@@ -1,7 +1,7 @@
 ## Main program is in /main
 # Tools:
 `generate_board(width, height, num_bombs)`</br>
-`click(pos) (not implemeneted)`</br>
+`click(pos)`</br>
 `reveal(pos)`</br>
 `hide(pos)`</br>
 `flag(pos)`</br>
